@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
 
-interface VandorDoc extends Document {
+interface VendorDoc extends Document {
 
     name: string;
     ownerName: string;
@@ -19,7 +19,7 @@ interface VandorDoc extends Document {
 }
 
 
-const VandorSchema = new Schema({
+const VendorSchema = new Schema({
     name:{ type: String, required: true},
     ownerName: { type: String, required: true},
     foodType: { type: [String] },
@@ -52,6 +52,6 @@ const VandorSchema = new Schema({
 });
 
 
-const Vandor = mongoose.model<VandorDoc>('vandor', VandorSchema);
+const Vendor = mongoose.model<VendorDoc>('vendor', VendorSchema);
 
-export { Vandor }
+export { Vendor }
