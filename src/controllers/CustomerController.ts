@@ -227,11 +227,14 @@ export const CreateOrder = async (req: Request, res: Response, next: NextFunctio
 
         let netAmount = 0.0;
 
+        let vendorId;
+
         const foods = await Food.find().where('_id').in(cart.map(item => item._id)).exec();
 
         foods.map(food => {
             cart.map(({ _id, unit}) => {
                 if(food._id == _id){
+                    vendorId = food.vendorId;
                     netAmount += (food.price * unit);
                     cartItems.push({ food, unit})
                 }
@@ -242,15 +245,22 @@ export const CreateOrder = async (req: Request, res: Response, next: NextFunctio
 
             const currentOrder = await Order.create({
                 orderId: orderId,
+                vendorId: vendorId,
                 items: cartItems,
                 totalAmount: netAmount,
                 orderDate: new Date(),
                 paidThrough: 'COD',
                 paymentReponse: '',
-                orderStatus: 'Waiting'
+                orderStatus: 'Waiting',
+                remarks: '',
+                deliveryId: '',
+                appliedOffer: false,
+                offerId: null,
+                readyTime: 45
             })
 
             if(currentOrder){
+                profile.cart = [] as any;
                 profile.orders.push(currentOrder);
             }
 
@@ -300,4 +310,99 @@ export const GetOrderById = async (req: Request, res: Response, next: NextFuncti
     }
 
     return res.status(400).json({ msg: 'Order not found'});
+}
+
+/* ------------------- Cart Section --------------------- */
+export const AddToCart = async (req: Request, res: Response, next: NextFunction) => {
+
+    const customer = req.user;
+    
+    if(customer){
+
+        const profile = await Customer.findById(customer._id);
+        let cartItems = Array();
+
+        const { _id, unit } = <OrderInputs>req.body;
+
+        const food = await Food.findById(_id);
+
+        if(food){
+
+            if(profile != null){
+                cartItems = profile.cart;
+
+                if(cartItems.length > 0){
+                    // check and update
+                    let existFoodItems = cartItems.filter((item) => item.food._id.toString() === _id);
+                    if(existFoodItems.length > 0){
+                        
+                        const index = cartItems.indexOf(existFoodItems[0]);
+                        
+                        if(unit > 0){
+                            cartItems[index] = { food, unit };
+                        }else{
+                            cartItems.splice(index, 1);
+                        }
+
+                    }else{
+                        cartItems.push({ food, unit})
+                    }
+
+                }else{
+                    // add new Item
+                    cartItems.push({ food, unit });
+                }
+
+                if(cartItems){
+                    profile.cart = cartItems as any;
+                    const cartResult = await profile.save();
+                    return res.status(200).json(cartResult.cart);
+                }
+
+            }
+        }
+
+    }
+
+    return res.status(404).json({ msg: 'Unable to add to cart!'});
+}
+
+export const GetCart = async (req: Request, res: Response, next: NextFunction) => {
+
+      
+    const customer = req.user;
+    
+    if(customer){
+        const profile = await Customer.findById(customer._id);
+
+        if(profile){
+            return res.status(200).json(profile.cart);
+        }
+    
+    }
+
+    return res.status(400).json({message: 'Cart is Empty!'})
+
+}
+
+export const DeleteCart = async (req: Request, res: Response, next: NextFunction) => {
+
+   
+    const customer = req.user;
+
+    if(customer){
+
+        const profile = await Customer.findById(customer._id).populate('cart.food').exec();
+
+        if(profile != null){
+            profile.cart = [] as any;
+            const cartResult = await profile.save();
+
+            return res.status(200).json(cartResult);
+        }
+
+    }
+
+    return res.status(400).json({message: 'cart is Already Empty!'})
+
 }
