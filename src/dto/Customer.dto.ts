@@ -31,9 +31,7 @@ export class EditCustomerProfileInput {
     @Length(6,16)
     address: string;
 }
-
-
-
+ 
 
 export interface CustomerPayload {
     _id: string;
@@ -42,7 +40,40 @@ export interface CustomerPayload {
 }
 
 
-export class OrderInputs {
+export class CartItem {
     _id: string;
     unit: number;
+}
+ 
+
+
+export class OrderInputs {
+    txnId: string;
+    amount: string;
+    items: [CartItem];
+}
+
+
+
+export class CreateDeliveryUserInput {
+    @IsEmail()
+    email: string;
+
+    @Length(7,12)
+    phone: string;
+
+    @Length(6,12)
+    password: string;
+
+    @Length(3,12)
+    firstName: string;
+
+    @Length(3,12)
+    lastName: string;
+
+    @Length(6,24)
+    address: string;
+
+    @Length(4,12)
+    pincode: string;
 }

@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { AddFood, GetFoods, GetOrderDetails, GetOrders, ProcessOrder, UpdateVendorCoverImage, UpdateVendorProfile, UpdateVendorService, VendorLogin } from '../controllers';
+import { AddFood, AddOffer, EditOffer, GetFoods, GetOffers, GetOrderDetails, GetOrders, ProcessOrder, UpdateVendorCoverImage, UpdateVendorProfile, UpdateVendorService, VendorLogin } from '../controllers';
 import { Authenticate } from '../middleware';
 import multer from 'multer';
 
@@ -33,6 +33,13 @@ router.get('/orders', GetOrders);
 router.put('/order/:id/process', ProcessOrder);
 router.get('/order/:id', GetOrderDetails)
  
+
+//Offers
+router.get('/offers', GetOffers);
+router.post('/offer', AddOffer);
+router.put('/offer/:id', EditOffer)
+ 
+
 
 router.get('/', (req: Request, res: Response, next: NextFunction) => {
  
