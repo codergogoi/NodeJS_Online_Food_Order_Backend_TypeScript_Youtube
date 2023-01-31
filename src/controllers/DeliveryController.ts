@@ -30,7 +30,7 @@ export const DeliverySignUp = async (req: Request, res: Response, next: NextFunc
     const salt = await GenerateSalt();
     const userPassword = await GeneratePassword(password, salt);
 
-     const existingDeliveryUser =  await DeliveryUser.fondOne({ email: email});
+     const existingDeliveryUser =  await DeliveryUser.findOne({ email: email});
 
     if(existingDeliveryUser !== null){
         return res.status(400).json({message: 'A Delivery User exist with the provided email ID!'});
