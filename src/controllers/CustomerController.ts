@@ -305,7 +305,7 @@ export const CreateOrder = async (req: Request, res: Response, next: NextFunctio
                 if(food._id == _id){
                     vendorId = food.vendorId;
                     netAmount += (food.price * unit);
-                    cartItems.push({ food, unit})
+                    cartItems.push({ food._id, unit})
                 }
             })
         })
