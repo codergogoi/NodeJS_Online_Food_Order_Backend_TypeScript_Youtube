@@ -235,7 +235,7 @@ const assignOrderForDelivery = async(orderId: string, vendorId: string) => {
             const currentOrder = await Order.findById(orderId);
             if(currentOrder){
                 //update Delivery ID
-                currentOrder.deliveryId = deliveryPerson[0]._id; 
+                currentOrder.deliveryId = deliveryPerson[0]._id as string; 
                 await currentOrder.save();
 
                 //Notify to vendor for received new order firebase push notification
